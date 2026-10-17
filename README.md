@@ -22,3 +22,15 @@ También puedes crear un fork de este proyecto, adicionar las reglas, y crear un
 Si tienes dudas, no dudes en contactarnos por redes sociales @MaptimeBogota.
 
 Este conjunto de reglas está listado en https://josm.openstreetmap.de/wiki/RulesSource
+
+Para utilizarlo asegúrate que esté activo en JOSM. Para eso, sigue estos pasos:
+
+![](https://github.com/OSM-Colombia/ColombianJosmValidator/blob/main/images/1-JOSM.png?raw=true)
+
+![](https://github.com/OSM-Colombia/ColombianJosmValidator/blob/main/images/2-Preferencias.png?raw=true)
+
+![](https://github.com/OSM-Colombia/ColombianJosmValidator/blob/main/images/3-Validator.png?raw=true)
+
+![](https://github.com/OSM-Colombia/ColombianJosmValidator/blob/main/images/4-Lista.png?raw=true)
+
+![](https://github.com/OSM-Colombia/ColombianJosmValidator/blob/main/images/5-Activada.png?raw=true)
