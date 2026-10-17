@@ -20,3 +20,5 @@ Si quieres aprender de ellas, hay muchos recursos en Internet como https://regex
 Si consideras que el validador debe tener más reglas, puedes crear un issue describiendo al escenario, y posibles casos de uso.
 También puedes crear un fork de este proyecto, adicionar las reglas, y crear un pull request.
 Si tienes dudas, no dudes en contactarnos por redes sociales @MaptimeBogota.
+
+Este conjunto de reglas está listado en https://josm.openstreetmap.de/wiki/RulesSource
