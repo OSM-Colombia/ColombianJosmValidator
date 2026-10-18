@@ -191,12 +191,15 @@ Movistar: 315, 316, 317, 318
 ETB: 305
 VirginMobile: 319
 Avantel: 350, 351
-Tigo: 300, 301, 302, 324
+Tigo: 300, 301, 302, 303, 304, 324
+Virgin Mobile y otros operadores virtuales (Setroc, Suma Móvil, Plintron, Liwa, Móvil Éxito, Gane Móvil): 333
+WOM: 302, 323, 324, 350, 351
 Líneas gratuitas nacionales (antes 01 8000 XXXXXX): 800, con 7 dígitos después. Ejemplo: 01 8000 521888 se escribe +57 800 0521888.
+También en la guía de OSM Colombia: https://wiki.openstreetmap.org/wiki/ES:Colombia/Gu%C3%ADa_para_mapear/n%C3%BAmeros_telef%C3%B3nicos
 Tomado de: https://ayuda.tigo.com.co/hc/es/articles/115012920068-Indicativos-telef%C3%B3nicos-Colombia-General
 Sin embargo, los números pueden cambiar de operador por portabilidad numérica.
 */
-*[/^(contact:(phone|mobile|fax)|phone(:mobile)?|fax|emergency:phone)$/][/^(contact:(phone|mobile|fax)|phone(:mobile)?|fax|emergency:phone)$/ !~ /^\+57 (601|602|60[4-8]|30[0-245]|31[0-9]|32[0-4]|35[01]|800) [0-9]{7}(;\+57 (601|602|60[4-8]|30[0-245]|31[0-9]|32[0-4]|35[01]|800) [0-9]{7})*$/][inside("CO")] {
+*[/^(contact:(phone|mobile|fax)|phone(:mobile)?|fax|emergency:phone)$/][/^(contact:(phone|mobile|fax)|phone(:mobile)?|fax|emergency:phone)$/ !~ /^\+57 (601|602|60[4-8]|30[0-5]|31[0-9]|32[0-4]|333|35[01]|800) [0-9]{7}(;\+57 (601|602|60[4-8]|30[0-5]|31[0-9]|32[0-4]|333|35[01]|800) [0-9]{7})*$/][inside("CO")] {
     throwWarning: "Los números de Colombia comienzan con +57, después 3 dígitos de código de área, y finalmente el número como tal";
 
    group: "Colombia - Teléfonos";
@@ -208,6 +211,10 @@ Sin embargo, los números pueden cambiar de operador por portabilidad numérica.
    assertMatch: "node phone=\"316 6214032\"";
    assertMatch: "node phone=00573166214032";
    assertNoMatch: "node phone=\"+57 800 0521888\"";
+   assertNoMatch: "node phone=\"+57 333 1234567\"";
+   assertNoMatch: "node phone=\"+57 303 1234567\"";
+   assertMatch: "node phone=\"+57 370 1234567\"";
+   assertMatch: "node phone=\"+57 306 1234567\"";
    assertMatch: "node phone=\"+57 1 800 0521888\"";
    assertNoMatch: "node phone=\"+57 601 2219872;+57 324 1234567\"";
    assertNoMatch: "node name=Farmacia";
@@ -217,91 +224,105 @@ Sin embargo, los números pueden cambiar de operador por portabilidad numérica.
 }
 
 
-/* Cuando hay varios teléfonos separados por punto y coma, no se deja espacio después del punto y coma.
+/* Varios teléfonos se separan solo con punto y coma, sin espacio después. También se corrige cuando los separan con coma.
 Se hace una regla por clave porque la corrección necesita saber cuál clave arreglar.
 La corrección quita hasta 4 espacios seguidos después de cada punto y coma; si quedaran más, la regla vuelve a avisar. */
-*["phone"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["phone"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("phone=", replace(replace(replace(replace(tag("phone"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("phone=", replace(replace(replace(replace(replace(replace(tag("phone"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node phone=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node phone=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node phone=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node phone=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["phone:mobile"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["phone:mobile"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("phone:mobile=", replace(replace(replace(replace(tag("phone:mobile"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("phone:mobile=", replace(replace(replace(replace(replace(replace(tag("phone:mobile"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node phone:mobile=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node phone:mobile=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node phone:mobile=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node phone:mobile=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["fax"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["fax"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("fax=", replace(replace(replace(replace(tag("fax"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("fax=", replace(replace(replace(replace(replace(replace(tag("fax"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node fax=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node fax=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node fax=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node fax=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["contact:phone"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["contact:phone"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("contact:phone=", replace(replace(replace(replace(tag("contact:phone"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("contact:phone=", replace(replace(replace(replace(replace(replace(tag("contact:phone"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node contact:phone=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node contact:phone=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node contact:phone=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node contact:phone=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["contact:mobile"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["contact:mobile"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("contact:mobile=", replace(replace(replace(replace(tag("contact:mobile"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("contact:mobile=", replace(replace(replace(replace(replace(replace(tag("contact:mobile"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node contact:mobile=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node contact:mobile=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node contact:mobile=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node contact:mobile=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["contact:fax"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["contact:fax"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("contact:fax=", replace(replace(replace(replace(tag("contact:fax"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("contact:fax=", replace(replace(replace(replace(replace(replace(tag("contact:fax"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node contact:fax=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node contact:fax=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node contact:fax=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node contact:fax=\"+57 601 2219872,+57 316 6214030\"";
 }
 
-*["emergency:phone"=~/; /][inside("CO")] {
-    throwWarning: "Los teléfonos se separan solo con punto y coma, sin espacio después";
+*["emergency:phone"=~/; |,/][inside("CO")] {
+    throwWarning: "Varios teléfonos se separan con punto y coma, sin espacio después y sin comas";
 
     group: "Colombia - Teléfonos";
 
-    fixAdd: concat("emergency:phone=", replace(replace(replace(replace(tag("emergency:phone"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
+    fixAdd: concat("emergency:phone=", replace(replace(replace(replace(replace(replace(tag("emergency:phone"), ", ", ";"), ",", ";"), "; ", ";"), "; ", ";"), "; ", ";"), "; ", ";"));
 
     /* Assertions for unit tests */
     assertMatch: "node emergency:phone=\"+57 601 2219872; +57 316 6214030\"";
     assertNoMatch: "node emergency:phone=\"+57 601 2219872;+57 316 6214030\"";
+    assertMatch: "node emergency:phone=\"+57 601 2219872, +57 316 6214030\"";
+    assertMatch: "node emergency:phone=\"+57 601 2219872,+57 316 6214030\"";
 }
 
 
